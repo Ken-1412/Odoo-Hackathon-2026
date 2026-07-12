@@ -12,7 +12,8 @@
     "db:seed": "npx tsx prisma/seed.ts",
     "db:studio": "npx prisma studio",
     "db:generate": "npx prisma generate",
-    "db:reset": "npx prisma migrate reset --force"
+    "db:reset": "npx prisma migrate reset --force",
+    "db:setup": "powershell -ExecutionPolicy Bypass -File setup-db.ps1"
   },
   "dependencies": {
     "@prisma/client": "^6.9.0",

@@ -58,17 +58,20 @@ interface ToastMessage {
 export default function AdminPortal({
   username,
   onLogout,
-  onSwitchToEmployee
+  onSwitchToEmployee,
+  themeMode,
+  setThemeMode
 }: {
   username: string | null;
   onLogout: () => void;
   onSwitchToEmployee: () => void;
+  themeMode: "light" | "dark";
+  setThemeMode: (mode: "light" | "dark") => void;
 }) {
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [activeSetupTab, setActiveSetupTab] = useState<"departments" | "categories" | "employees">("departments");
   const [toastMessages, setToastMessages] = useState<ToastMessage[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [themeMode, setThemeMode] = useState<"light" | "dark">("light");
 
   // Filter States for Employee Directory
   const [filterDept, setFilterDept] = useState("All");
@@ -1047,7 +1050,7 @@ export default function AdminPortal({
                             <td className="p-3 text-surface-600 dark:text-zinc-400">{emp.department}</td>
                             <td className="p-3">
                               <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wide uppercase ${
-                                emp.role === "Employee" ? "bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200" :
+                                emp.role === "Employee" ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-250 dark:border-zinc-700" :
                                 emp.role === "Department Head" ? "bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200" :
                                 emp.role === "Asset Manager" ? "bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border border-orange-200" :
                                 "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 border border-red-200"

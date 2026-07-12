@@ -52,11 +52,15 @@ interface LogEntry {
 export default function Dashboard({ 
   username, 
   onLogout,
-  onSwitchToAdmin
+  onSwitchToAdmin,
+  themeMode,
+  setThemeMode
 }: { 
   username: string | null; 
   onLogout: () => void; 
   onSwitchToAdmin?: () => void;
+  themeMode: "light" | "dark";
+  setThemeMode: (mode: "light" | "dark") => void;
 }) {
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [dashboardMode, setDashboardMode] = useState<"assets" | "crm">("assets");
@@ -309,32 +313,41 @@ export default function Dashboard({
 
   return (
     <div 
-      className="min-h-screen bg-surface-50 text-surface-900 flex flex-col font-sans select-none"
+      className={`min-h-screen bg-surface-50 text-surface-900 flex flex-col font-sans select-none transition-colors duration-200 ${themeMode === "dark" ? "dark bg-zinc-950 text-zinc-100" : ""}`}
       style={{
-        backgroundImage: `linear-gradient(rgba(248, 249, 250, 0.94), rgba(248, 249, 250, 0.98)), url('/clean_space_chains_bg.png')`,
+        backgroundImage: themeMode === "light" 
+          ? `linear-gradient(rgba(248, 249, 250, 0.94), rgba(248, 249, 250, 0.98)), url('/clean_space_chains_bg.png')`
+          : `linear-gradient(rgba(9, 9, 11, 0.96), rgba(9, 9, 11, 0.98)), url('/clean_space_chains_bg.png')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
       {/* Top Header */}
-      <header className="h-16 border-b border-surface-200 px-6 flex items-center justify-between bg-white/80 backdrop-blur-md sticky top-0 z-30 shadow-sm">
+      <header className="h-16 border-b border-surface-200 dark:border-zinc-800 px-6 flex items-center justify-between bg-white/80 dark:bg-zinc-900/85 backdrop-blur-md sticky top-0 z-30 shadow-sm">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded bg-brand-900 flex items-center justify-center p-1">
             <Logo className="w-full h-full text-white" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-surface-900 font-sans">
+          <span className="text-xl font-bold tracking-tight text-surface-900 dark:text-white font-sans">
             Asset<span className="text-brand-900">Flow</span>
           </span>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-surface-600 font-medium">
-            Agent Callsign: <span className="text-brand-900 font-bold">{username || "Guest"}</span>
+          <button
+            onClick={() => setThemeMode(themeMode === "light" ? "dark" : "light")}
+            className="p-2 border border-surface-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-900 text-surface-600 dark:text-zinc-400 dark:text-zinc-300 hover:bg-surface-50 dark:hover:bg-zinc-800 transition cursor-pointer"
+            title="Toggle Theme"
+          >
+            <Sparkles className="w-4 h-4" />
+          </button>
+          <span className="text-sm text-surface-600 dark:text-zinc-400 dark:text-zinc-400 font-medium">
+            Agent Callsign: <span className="text-brand-900 dark:text-brand-500 font-bold">{username || "Guest"}</span>
           </span>
           {onSwitchToAdmin && (
             <button
               type="button"
               onClick={onSwitchToAdmin}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-900 text-xs font-bold text-brand-900 hover:bg-brand-50 bg-white transition-all cursor-pointer shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-brand-900 text-xs font-bold text-brand-900 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-zinc-800 bg-white dark:bg-zinc-900 transition-all cursor-pointer shadow-sm"
             >
               Admin Portal
             </button>
@@ -353,7 +366,7 @@ export default function Dashboard({
       {/* Main Layout Area */}
       <div className="flex-grow flex">
         {/* Sidebar Navigation */}
-        <aside className="w-64 border-r border-surface-200 bg-white/40 backdrop-blur-md py-6 flex flex-col justify-between shrink-0">
+        <aside className="w-64 border-r border-surface-200 dark:border-zinc-800 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md py-6 flex flex-col justify-between shrink-0">
           <nav className="space-y-1 px-3">
             {sidebarLinks.map(link => {
               const Icon = link.icon;
@@ -366,17 +379,17 @@ export default function Dashboard({
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold transition-all cursor-pointer ${
                     isActive 
                       ? "bg-brand-900 text-white shadow-md shadow-brand-900/20" 
-                      : "text-surface-650 hover:bg-surface-100 hover:text-surface-900"
+                      : "text-surface-650 dark:text-zinc-400 hover:bg-surface-100 dark:hover:bg-zinc-800 hover:text-surface-900 dark:hover:text-white"
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-surface-400"}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-surface-400 dark:text-zinc-550"}`} />
                   {link.label}
                 </button>
               );
             })}
           </nav>
           
-          <div className="px-6 py-4 border-t border-surface-200 text-[10px] text-surface-400 font-mono">
+          <div className="px-6 py-4 border-t border-surface-200 dark:border-zinc-800 text-[10px] text-surface-400 dark:text-zinc-600 font-mono">
             SECURE SYSTEM v2.4
           </div>
         </aside>
@@ -388,22 +401,22 @@ export default function Dashboard({
             <div className="max-w-6xl space-y-8">
               <div className="flex justify-between items-center border-b border-surface-200 pb-4">
                 <div>
-                  <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 font-sans uppercase">Today's Overview</h2>
-                  <p className="text-sm text-surface-600 mt-1 font-medium">Real-time status of organizational resources and activities.</p>
+                  <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 dark:text-white dark:text-white font-sans uppercase">Today's Overview</h2>
+                  <p className="text-sm text-surface-600 dark:text-zinc-400 dark:text-zinc-400 mt-1 font-medium">Real-time status of organizational resources and activities.</p>
                 </div>
                 {/* Mode Selector */}
-                <div className="flex gap-1.5 bg-surface-200/60 p-1.5 rounded-xl border border-surface-250 shrink-0">
+                <div className="flex gap-1.5 bg-surface-200/60 dark:bg-zinc-900/60 p-1.5 rounded-xl border border-surface-250 dark:border-zinc-800 shrink-0">
                   <button
                     type="button"
                     onClick={() => setDashboardMode("assets")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${dashboardMode === "assets" ? "bg-brand-900 text-white shadow" : "text-surface-700 hover:text-surface-900 hover:bg-surface-100"}`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${dashboardMode === "assets" ? "bg-brand-900 text-white shadow" : "text-surface-700 dark:text-zinc-300 hover:text-surface-900 hover:bg-surface-100"}`}
                   >
                     Physical Assets
                   </button>
                   <button
                     type="button"
                     onClick={() => setDashboardMode("crm")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${dashboardMode === "crm" ? "bg-brand-900 text-white shadow" : "text-surface-700 hover:text-surface-900 hover:bg-surface-100"}`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${dashboardMode === "crm" ? "bg-brand-900 text-white shadow" : "text-surface-700 dark:text-zinc-300 hover:text-surface-900 hover:bg-surface-100"}`}
                   >
                     CRM Integrations
                   </button>
@@ -413,56 +426,56 @@ export default function Dashboard({
               {/* Stats Grid */}
               {dashboardMode === "assets" ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="bg-white border border-surface-200/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
-                    <span className="text-xs font-bold text-surface-500 uppercase tracking-wider font-sans">Available Hardware</span>
-                    <span className="text-3xl font-extrabold text-surface-900 tracking-tight">{stats.availableHardware}</span>
+                  <div className="bg-white dark:bg-zinc-900 border border-surface-200/80 dark:border-zinc-800/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
+                    <span className="text-xs font-bold text-surface-500 dark:text-zinc-500 uppercase tracking-wider font-sans">Available Hardware</span>
+                    <span className="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">{stats.availableHardware}</span>
                   </div>
-                  <div className="bg-white border border-surface-200/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
-                    <span className="text-xs font-bold text-surface-500 uppercase tracking-wider font-sans">Allocated Assets</span>
-                    <span className="text-3xl font-extrabold text-surface-900 tracking-tight">{stats.allocated}</span>
+                  <div className="bg-white dark:bg-zinc-900 border border-surface-200/80 dark:border-zinc-800/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
+                    <span className="text-xs font-bold text-surface-500 dark:text-zinc-500 uppercase tracking-wider font-sans">Allocated Assets</span>
+                    <span className="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">{stats.allocated}</span>
                   </div>
-                  <div className="bg-white border border-surface-200/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
-                    <span className="text-xs font-bold text-surface-500 uppercase tracking-wider font-sans">Available Rooms</span>
+                  <div className="bg-white dark:bg-zinc-900 border border-surface-200/80 dark:border-zinc-800/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
+                    <span className="text-xs font-bold text-surface-500 dark:text-zinc-500 uppercase tracking-wider font-sans">Available Rooms</span>
                     <span className="text-3xl font-extrabold text-brand-900 tracking-tight">{stats.availableRooms}</span>
                   </div>
-                  <div className="bg-white border border-surface-200/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
-                    <span className="text-xs font-bold text-surface-500 uppercase tracking-wider font-sans">Active Bookings</span>
-                    <span className="text-3xl font-extrabold text-surface-900 tracking-tight">{stats.activeBookings}</span>
+                  <div className="bg-white dark:bg-zinc-900 border border-surface-200/80 dark:border-zinc-800/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
+                    <span className="text-xs font-bold text-surface-500 dark:text-zinc-500 uppercase tracking-wider font-sans">Active Bookings</span>
+                    <span className="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">{stats.activeBookings}</span>
                   </div>
-                  <div className="bg-white border border-surface-200/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
-                    <span className="text-xs font-bold text-surface-500 uppercase tracking-wider font-sans">Pending Transfers</span>
+                  <div className="bg-white dark:bg-zinc-900 border border-surface-200/80 dark:border-zinc-800/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
+                    <span className="text-xs font-bold text-surface-500 dark:text-zinc-500 uppercase tracking-wider font-sans">Pending Transfers</span>
                     <span className="text-3xl font-extrabold text-amber-600 tracking-tight">{stats.pendingTransfers}</span>
                   </div>
-                  <div className="bg-white border border-surface-200/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
-                    <span className="text-xs font-bold text-surface-500 uppercase tracking-wider font-sans">Upcoming returns</span>
-                    <span className="text-3xl font-extrabold text-surface-900 tracking-tight">{stats.upcomingReturns}</span>
+                  <div className="bg-white dark:bg-zinc-900 border border-surface-200/80 dark:border-zinc-800/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
+                    <span className="text-xs font-bold text-surface-500 dark:text-zinc-500 uppercase tracking-wider font-sans">Upcoming returns</span>
+                    <span className="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">{stats.upcomingReturns}</span>
                   </div>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="bg-white border border-surface-200/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
-                    <span className="text-xs font-bold text-surface-500 uppercase tracking-wider font-sans">Sales Pipeline Leads</span>
-                    <span className="text-3xl font-extrabold text-surface-900 tracking-tight">1,284</span>
+                  <div className="bg-white dark:bg-zinc-900 border border-surface-200/80 dark:border-zinc-800/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
+                    <span className="text-xs font-bold text-surface-500 dark:text-zinc-500 uppercase tracking-wider font-sans">Sales Pipeline Leads</span>
+                    <span className="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">1,284</span>
                   </div>
-                  <div className="bg-white border border-surface-200/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
-                    <span className="text-xs font-bold text-surface-500 uppercase tracking-wider font-sans">API Sync Success</span>
-                    <span className="text-3xl font-extrabold text-surface-900 tracking-tight">99.9%</span>
+                  <div className="bg-white dark:bg-zinc-900 border border-surface-200/80 dark:border-zinc-800/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
+                    <span className="text-xs font-bold text-surface-500 dark:text-zinc-500 uppercase tracking-wider font-sans">API Sync Success</span>
+                    <span className="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">99.9%</span>
                   </div>
-                  <div className="bg-white border border-surface-200/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
-                    <span className="text-xs font-bold text-surface-500 uppercase tracking-wider font-sans">AI Follow-ups Sent</span>
+                  <div className="bg-white dark:bg-zinc-900 border border-surface-200/80 dark:border-zinc-800/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
+                    <span className="text-xs font-bold text-surface-500 dark:text-zinc-500 uppercase tracking-wider font-sans">AI Follow-ups Sent</span>
                     <span className="text-3xl font-extrabold text-brand-900 tracking-tight">4,112</span>
                   </div>
-                  <div className="bg-white border border-surface-200/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
-                    <span className="text-xs font-bold text-surface-500 uppercase tracking-wider font-sans">Connected Platforms</span>
-                    <span className="text-3xl font-extrabold text-surface-900 tracking-tight">8 / 8</span>
+                  <div className="bg-white dark:bg-zinc-900 border border-surface-200/80 dark:border-zinc-800/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
+                    <span className="text-xs font-bold text-surface-500 dark:text-zinc-500 uppercase tracking-wider font-sans">Connected Platforms</span>
+                    <span className="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">8 / 8</span>
                   </div>
-                  <div className="bg-white border border-surface-200/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
-                    <span className="text-xs font-bold text-surface-500 uppercase tracking-wider font-sans">Sync Volume (Daily)</span>
+                  <div className="bg-white dark:bg-zinc-900 border border-surface-200/80 dark:border-zinc-800/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
+                    <span className="text-xs font-bold text-surface-500 dark:text-zinc-500 uppercase tracking-wider font-sans">Sync Volume (Daily)</span>
                     <span className="text-3xl font-extrabold text-amber-600 tracking-tight">24.2k</span>
                   </div>
-                  <div className="bg-white border border-surface-200/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
-                    <span className="text-xs font-bold text-surface-500 uppercase tracking-wider font-sans">Avg Response Time</span>
-                    <span className="text-3xl font-extrabold text-surface-900 tracking-tight">4.2 hrs</span>
+                  <div className="bg-white dark:bg-zinc-900 border border-surface-200/80 dark:border-zinc-800/80 hover:border-brand-900/30 rounded-xl p-5 shadow-sm hover:shadow transition-all flex flex-col justify-between h-28">
+                    <span className="text-xs font-bold text-surface-500 dark:text-zinc-500 uppercase tracking-wider font-sans">Avg Response Time</span>
+                    <span className="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">4.2 hrs</span>
                   </div>
                 </div>
               )}
@@ -470,7 +483,7 @@ export default function Dashboard({
               {/* Red/Amber Warning Banner */}
               {dashboardMode === "assets" ? (
                 notifications.length > 0 && (
-                  <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-semibold tracking-wide shadow-sm">
+                  <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-xl text-red-700 dark:text-red-300 text-sm font-semibold tracking-wide shadow-sm">
                     <AlertTriangle className="w-5 h-5 shrink-0 text-red-655" />
                     <span>3 assets overdue for return - flagged for follow-up</span>
                     <button 
@@ -504,7 +517,7 @@ export default function Dashboard({
                     <button
                       type="button"
                       onClick={() => setShowBookingModal(true)}
-                      className="px-5 py-3 rounded-lg border border-surface-200 hover:border-brand-900 bg-white hover:bg-surface-50 text-surface-700 hover:text-brand-900 font-bold text-sm shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                      className="px-5 py-3 rounded-lg border border-surface-200 hover:border-brand-900 bg-white hover:bg-surface-50 text-surface-700 dark:text-zinc-300 hover:text-brand-900 font-bold text-sm shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       <Calendar className="w-4 h-4 text-surface-400" />
                       Book resource
@@ -512,7 +525,7 @@ export default function Dashboard({
                     <button
                       type="button"
                       onClick={() => setShowRequestModal(true)}
-                      className="px-5 py-3 rounded-lg border border-surface-200 hover:border-brand-900 bg-white hover:bg-surface-50 text-surface-700 hover:text-brand-900 font-bold text-sm shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                      className="px-5 py-3 rounded-lg border border-surface-200 hover:border-brand-900 bg-white hover:bg-surface-50 text-surface-700 dark:text-zinc-300 hover:text-brand-900 font-bold text-sm shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       <Wrench className="w-4 h-4 text-surface-400" />
                       Raise requests
@@ -544,7 +557,7 @@ export default function Dashboard({
                         };
                         setActivities([newAct, ...activities]);
                       }}
-                      className="px-5 py-3 rounded-lg border border-surface-200 hover:border-brand-900 bg-white hover:bg-surface-50 text-surface-700 hover:text-brand-900 font-bold text-sm shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                      className="px-5 py-3 rounded-lg border border-surface-200 hover:border-brand-900 bg-white hover:bg-surface-50 text-surface-700 dark:text-zinc-300 hover:text-brand-900 font-bold text-sm shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       Optimize Pipeline
                     </button>
@@ -553,13 +566,13 @@ export default function Dashboard({
               </div>
 
               {/* Recent Activity List */}
-              <div className="bg-white border border-surface-200 rounded-xl p-6 space-y-4 shadow-sm">
-                <h3 className="text-lg font-bold text-surface-900 tracking-wide font-sans uppercase">Recent Activity</h3>
-                <div className="space-y-3 font-semibold text-sm text-surface-700">
+              <div className="bg-white dark:bg-zinc-900 border border-surface-200 dark:border-zinc-800 rounded-xl p-6 space-y-4 shadow-sm">
+                <h3 className="text-lg font-bold text-surface-900 dark:text-white tracking-wide font-sans uppercase">Recent Activity</h3>
+                <div className="space-y-3 font-semibold text-sm text-surface-700 dark:text-zinc-300">
                   {activities.map(activity => (
-                    <div key={activity.id} className="flex justify-between items-center py-2 border-b border-surface-100 last:border-b-0">
+                    <div key={activity.id} className="flex justify-between items-center py-2 border-b border-surface-100 dark:border-zinc-800 last:border-b-0">
                       <span>{activity.text}</span>
-                      <span className="text-xs text-surface-400 font-mono font-normal shrink-0">{activity.timestamp}</span>
+                      <span className="text-xs text-surface-400 dark:text-zinc-550 font-mono font-normal shrink-0">{activity.timestamp}</span>
                     </div>
                   ))}
                 </div>
@@ -571,27 +584,27 @@ export default function Dashboard({
           {activeTab === "org_setup" && (
             <div className="max-w-6xl space-y-8">
               <div>
-                <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 font-sans uppercase">Organization setup</h2>
-                <p className="text-sm text-surface-600 mt-1 font-medium">Manage departments, parent configurations, and resource categories.</p>
+                <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 dark:text-white dark:text-white font-sans uppercase">Organization setup</h2>
+                <p className="text-sm text-surface-600 dark:text-zinc-400 dark:text-zinc-400 mt-1 font-medium">Manage departments, parent configurations, and resource categories.</p>
               </div>
 
               {/* Sub tabs */}
               <div className="flex gap-2 border-b border-surface-200 pb-3">
                 <button
                   onClick={() => setOrgSubTab("departments")}
-                  className={`px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-colors ${orgSubTab === "departments" ? "bg-brand-900 text-white" : "bg-white border border-surface-200 text-surface-700 hover:bg-surface-50"}`}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-colors ${orgSubTab === "departments" ? "bg-brand-900 text-white" : "bg-white border border-surface-200 text-surface-700 dark:text-zinc-300 hover:bg-surface-50"}`}
                 >
                   Departments
                 </button>
                 <button
                   onClick={() => setOrgSubTab("categories")}
-                  className={`px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-colors ${orgSubTab === "categories" ? "bg-brand-900 text-white" : "bg-white border border-surface-200 text-surface-700 hover:bg-surface-50"}`}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-colors ${orgSubTab === "categories" ? "bg-brand-900 text-white" : "bg-white border border-surface-200 text-surface-700 dark:text-zinc-300 hover:bg-surface-50"}`}
                 >
                   Categories
                 </button>
                 <button
                   onClick={() => setOrgSubTab("employees")}
-                  className={`px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-colors ${orgSubTab === "employees" ? "bg-brand-900 text-white" : "bg-white border border-surface-200 text-surface-700 hover:bg-surface-50"}`}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-colors ${orgSubTab === "employees" ? "bg-brand-900 text-white" : "bg-white border border-surface-200 text-surface-700 dark:text-zinc-300 hover:bg-surface-50"}`}
                 >
                   Employee
                 </button>
@@ -605,22 +618,22 @@ export default function Dashboard({
 
               {/* Departments Table */}
               {orgSubTab === "departments" && (
-                <div className="bg-white border border-surface-200 rounded-xl overflow-hidden shadow-sm">
+                <div className="bg-white dark:bg-zinc-900 border border-surface-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm">
                   <table className="w-full text-left text-sm border-collapse">
                     <thead>
-                      <tr className="bg-surface-50 border-b border-surface-200 text-surface-700 font-bold uppercase tracking-wider text-xs">
+                      <tr className="bg-surface-50 border-b border-surface-200 text-surface-700 dark:text-zinc-300 font-bold uppercase tracking-wider text-xs">
                         <th className="p-4">Department</th>
                         <th className="p-4">Head</th>
                         <th className="p-4">Parent Dept</th>
                         <th className="p-4">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-surface-150 font-semibold text-surface-850">
+                    <tbody className="divide-y divide-surface-150 dark:divide-zinc-800 font-semibold text-surface-850 dark:text-zinc-200">
                       {departments.map((dept, idx) => (
-                        <tr key={idx} className="hover:bg-surface-50/50">
+                        <tr key={idx} className="hover:bg-surface-50/50 dark:hover:bg-zinc-900/50">
                           <td className="p-4">{dept.name}</td>
-                          <td className="p-4 text-surface-600">{dept.head}</td>
-                          <td className="p-4 text-surface-600">{dept.parent}</td>
+                          <td className="p-4 text-surface-600 dark:text-zinc-400">{dept.head}</td>
+                          <td className="p-4 text-surface-600 dark:text-zinc-400">{dept.parent}</td>
                           <td className="p-4">
                             <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold ${dept.status === "Active" ? "bg-green-50 text-green-700 border border-green-200" : "bg-zinc-100 text-zinc-600 border border-zinc-200"}`}>
                               {dept.status}
@@ -630,7 +643,7 @@ export default function Dashboard({
                       ))}
                     </tbody>
                   </table>
-                  <div className="p-4 bg-surface-50 border-t border-surface-200 text-xs font-bold text-surface-500 tracking-wide uppercase">
+                  <div className="p-4 bg-surface-50 dark:bg-zinc-950 border-t border-surface-200 dark:border-zinc-800 text-xs font-bold text-surface-500 dark:text-zinc-500 tracking-wide uppercase">
                     Editing a department here also drives the picklist in Screen 4 & 5
                   </div>
                 </div>
@@ -639,7 +652,7 @@ export default function Dashboard({
               {/* Placeholders for Subtabs */}
               {orgSubTab !== "departments" && (
                 <div className="p-12 text-center border border-dashed border-surface-200 rounded-xl bg-white shadow-sm">
-                  <p className="text-sm font-bold text-surface-700 uppercase">Configuration panel active</p>
+                  <p className="text-sm font-bold text-surface-700 dark:text-zinc-300 uppercase">Configuration panel active</p>
                   <p className="text-xs text-surface-500 mt-1 max-w-sm mx-auto">This list is connected to active directory services. Add or manage keys dynamically using the add control buttons.</p>
                 </div>
               )}
@@ -651,8 +664,8 @@ export default function Dashboard({
             <div className="max-w-6xl space-y-8">
               <div className="flex justify-between items-end">
                 <div>
-                  <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 font-sans uppercase">Assets Directory</h2>
-                  <p className="text-sm text-surface-600 mt-1 font-medium">Verify hardware, allocations, and service logs.</p>
+                  <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 dark:text-white dark:text-white font-sans uppercase">Assets Directory</h2>
+                  <p className="text-sm text-surface-600 dark:text-zinc-400 dark:text-zinc-400 mt-1 font-medium">Verify hardware, allocations, and service logs.</p>
                 </div>
                 <button
                   onClick={() => setShowRegisterModal(true)}
@@ -663,19 +676,19 @@ export default function Dashboard({
               </div>
 
               {/* Filters Bar */}
-              <div className="flex flex-wrap gap-4 bg-white/60 p-4 border border-surface-200 rounded-xl shadow-sm">
+              <div className="flex flex-wrap gap-4 bg-white/60 dark:bg-zinc-900/60 p-4 border border-surface-200 dark:border-zinc-800 rounded-xl shadow-sm">
                 <input
                   type="text"
                   placeholder="Search by tag, serial, or QR code.."
                   value={assetSearch}
                   onChange={e => setAssetSearch(e.target.value)}
-                  className="flex-grow min-w-[240px] bg-white border border-surface-300 rounded-lg px-3 h-10 text-sm focus:border-brand-900 focus:ring-brand-900 outline-none font-semibold text-surface-900"
+                  className="flex-grow min-w-[240px] bg-white dark:bg-zinc-950 border border-surface-300 dark:border-zinc-800 rounded-lg px-3 h-10 text-sm focus:border-brand-900 focus:ring-brand-900 outline-none font-semibold text-surface-900 dark:text-zinc-100"
                 />
                 
                 <select
                   value={assetCategoryFilter}
                   onChange={e => setAssetCategoryFilter(e.target.value)}
-                  className="bg-white border border-surface-300 rounded-lg px-3 h-10 text-sm focus:border-brand-900 outline-none font-semibold text-surface-700"
+                  className="bg-white dark:bg-zinc-950 border border-surface-300 dark:border-zinc-800 rounded-lg px-3 h-10 text-sm focus:border-brand-900 outline-none font-semibold text-surface-700 dark:text-zinc-300 dark:text-zinc-300"
                 >
                   <option value="All">All Categories</option>
                   <option value="Electronics">Electronics</option>
@@ -685,7 +698,7 @@ export default function Dashboard({
                 <select
                   value={assetStatusFilter}
                   onChange={e => setAssetStatusFilter(e.target.value)}
-                  className="bg-white border border-surface-300 rounded-lg px-3 h-10 text-sm focus:border-brand-900 outline-none font-semibold text-surface-700"
+                  className="bg-white dark:bg-zinc-950 border border-surface-300 dark:border-zinc-800 rounded-lg px-3 h-10 text-sm focus:border-brand-900 outline-none font-semibold text-surface-700 dark:text-zinc-300 dark:text-zinc-300"
                 >
                   <option value="All">All Statuses</option>
                   <option value="Available">Available</option>
@@ -695,10 +708,10 @@ export default function Dashboard({
               </div>
 
               {/* Assets Directory Table */}
-              <div className="bg-white border border-surface-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="bg-white dark:bg-zinc-900 border border-surface-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm">
                 <table className="w-full text-left text-sm border-collapse">
                   <thead>
-                    <tr className="bg-surface-50 border-b border-surface-200 text-surface-700 font-bold uppercase tracking-wider text-xs">
+                    <tr className="bg-surface-50 border-b border-surface-200 text-surface-700 dark:text-zinc-300 font-bold uppercase tracking-wider text-xs">
                       <th className="p-4">Tag</th>
                       <th className="p-4">Name</th>
                       <th className="p-4">Category</th>
@@ -706,7 +719,7 @@ export default function Dashboard({
                       <th className="p-4">Location</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-surface-150 font-semibold text-surface-850">
+                  <tbody className="divide-y divide-surface-150 dark:divide-zinc-800 font-semibold text-surface-850 dark:text-zinc-200">
                     {assets
                       .filter(a => {
                         const matchesQuery = a.tag.toLowerCase().includes(assetSearch.toLowerCase()) || a.name.toLowerCase().includes(assetSearch.toLowerCase());
@@ -715,10 +728,10 @@ export default function Dashboard({
                         return matchesQuery && matchesCategory && matchesStatus;
                       })
                       .map((asset, idx) => (
-                        <tr key={idx} className="hover:bg-surface-50/50">
+                        <tr key={idx} className="hover:bg-surface-50/50 dark:hover:bg-zinc-900/50">
                           <td className="p-4 text-brand-900 font-bold">{asset.tag}</td>
                           <td className="p-4">{asset.name}</td>
-                          <td className="p-4 text-surface-600">{asset.category}</td>
+                          <td className="p-4 text-surface-600 dark:text-zinc-400">{asset.category}</td>
                           <td className="p-4">
                             <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold ${
                               asset.status === "Available" ? "bg-green-50 text-green-700 border border-green-200" :
@@ -728,7 +741,7 @@ export default function Dashboard({
                               {asset.status}
                             </span>
                           </td>
-                          <td className="p-4 text-surface-600">{asset.location}</td>
+                          <td className="p-4 text-surface-600 dark:text-zinc-400">{asset.location}</td>
                         </tr>
                       ))}
                   </tbody>
@@ -741,16 +754,16 @@ export default function Dashboard({
           {activeTab === "transfers" && (
             <div className="max-w-6xl space-y-8">
               <div>
-                <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 font-sans uppercase">Asset allocation & Transfer</h2>
-                <p className="text-sm text-surface-600 mt-1 font-medium">Coordinate resource allocation and double-allocation validation rules.</p>
+                <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 dark:text-white dark:text-white font-sans uppercase">Asset allocation & Transfer</h2>
+                <p className="text-sm text-surface-600 dark:text-zinc-400 dark:text-zinc-400 mt-1 font-medium">Coordinate resource allocation and double-allocation validation rules.</p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Form column */}
-                <div className="lg:col-span-2 bg-white border border-surface-200 rounded-xl p-6 shadow-sm space-y-6">
+                <div className="lg:col-span-2 bg-white dark:bg-zinc-900 border border-surface-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm space-y-6">
                   {/* Select Asset */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-600 uppercase tracking-wider">Asset</label>
+                    <label className="text-xs font-bold text-surface-600 dark:text-zinc-400 uppercase tracking-wider">Asset</label>
                     <select
                       value={transferAsset}
                       onChange={e => setTransferAsset(e.target.value)}
@@ -780,7 +793,7 @@ export default function Dashboard({
                     <form onSubmit={handleTransferRequest} className="space-y-4">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-surface-600 uppercase tracking-wider">From</label>
+                          <label className="text-xs font-bold text-surface-600 dark:text-zinc-400 uppercase tracking-wider">From</label>
                           <input
                             type="text"
                             value={transferAsset === "AF-0201" ? "--" : "Priya Shah"}
@@ -789,7 +802,7 @@ export default function Dashboard({
                           />
                         </div>
                         <div className="space-y-1.5">
-                          <label className="text-xs font-bold text-surface-600 uppercase tracking-wider">To</label>
+                          <label className="text-xs font-bold text-surface-600 dark:text-zinc-400 uppercase tracking-wider">To</label>
                           <select
                             value={transferTo}
                             onChange={e => setTransferTo(e.target.value)}
@@ -805,7 +818,7 @@ export default function Dashboard({
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-surface-600 uppercase tracking-wider">Reason</label>
+                        <label className="text-xs font-bold text-surface-600 dark:text-zinc-400 uppercase tracking-wider">Reason</label>
                         <textarea
                           rows={4}
                           value={transferReason}
@@ -828,7 +841,7 @@ export default function Dashboard({
                 {/* History column */}
                 <div className="bg-white border border-surface-200 rounded-xl p-6 shadow-sm space-y-4">
                   <h3 className="text-base font-bold text-surface-900 uppercase tracking-wider font-sans border-b border-surface-150 pb-2">Allocation history</h3>
-                  <div className="space-y-4 text-sm font-semibold text-surface-700">
+                  <div className="space-y-4 text-sm font-semibold text-surface-700 dark:text-zinc-300">
                     {allocationHistory.map((hist, idx) => (
                       <div key={idx} className="flex gap-3">
                         <span className="text-xs text-brand-900 font-mono bg-brand-50 px-2 py-0.5 rounded h-5">{hist.date}</span>
@@ -846,8 +859,8 @@ export default function Dashboard({
             <div className="max-w-6xl space-y-8">
               <div className="flex justify-between items-end">
                 <div>
-                  <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 font-sans uppercase">Resource booking</h2>
-                  <p className="text-sm text-surface-600 mt-1 font-medium">Verify shared calendar slots and double-booking validations.</p>
+                  <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 dark:text-white dark:text-white font-sans uppercase">Resource booking</h2>
+                  <p className="text-sm text-surface-600 dark:text-zinc-400 dark:text-zinc-400 mt-1 font-medium">Verify shared calendar slots and double-booking validations.</p>
                 </div>
                 <button
                   onClick={() => setShowBookingModal(true)}
@@ -857,10 +870,10 @@ export default function Dashboard({
                 </button>
               </div>
 
-              <div className="bg-white border border-surface-200 rounded-xl p-6 shadow-sm space-y-6">
+              <div className="bg-white dark:bg-zinc-900 border border-surface-200 dark:border-zinc-800 rounded-xl p-6 shadow-sm space-y-6">
                 {/* Resource Dropdown Selector */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-surface-600 uppercase tracking-wider">Resource</label>
+                  <label className="text-xs font-bold text-surface-600 dark:text-zinc-400 uppercase tracking-wider">Resource</label>
                   <select
                     value={bookingResource}
                     onChange={e => setBookingResource(e.target.value)}
@@ -879,7 +892,7 @@ export default function Dashboard({
                       <div className="w-16 text-surface-500 font-mono text-right">{slot.time}</div>
                       
                       {slot.isBooked ? (
-                        <div className="flex-grow p-4 bg-brand-50 border border-brand-200/80 rounded-lg text-brand-900 shadow-inner">
+                        <div className="flex-grow p-4 bg-brand-50 dark:bg-brand-950 border border-brand-200/80 dark:border-brand-900 rounded-lg text-brand-900 dark:text-brand-300 shadow-inner">
                           {slot.text}
                         </div>
                       ) : slot.conflict ? (
@@ -903,8 +916,8 @@ export default function Dashboard({
             <div className="max-w-6xl space-y-8">
               <div className="flex justify-between items-end">
                 <div>
-                  <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 font-sans uppercase">Maintenance Management</h2>
-                  <p className="text-sm text-surface-600 mt-1 font-medium">Kanban board workflow for approvals, assignments, and ticket resolution.</p>
+                  <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 dark:text-white dark:text-white font-sans uppercase">Maintenance Management</h2>
+                  <p className="text-sm text-surface-600 dark:text-zinc-400 dark:text-zinc-400 mt-1 font-medium">Kanban board workflow for approvals, assignments, and ticket resolution.</p>
                 </div>
                 <button
                   onClick={() => setShowRequestModal(true)}
@@ -918,7 +931,7 @@ export default function Dashboard({
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 {(["Pending", "Approved", "Technician assigned", "In progress", "Resolved"] as const).map(col => (
                   <div key={col} className="bg-white border border-surface-200 rounded-xl p-4 flex flex-col space-y-3 min-h-[300px] shadow-sm">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-surface-700 pb-2 border-b border-surface-150">{col}</h3>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-surface-700 dark:text-zinc-300 pb-2 border-b border-surface-150">{col}</h3>
                     <div className="flex-grow space-y-3">
                       {maintenanceTickets
                         .filter(t => t.status === col)
@@ -936,7 +949,7 @@ export default function Dashboard({
                             {ticket.status !== "Resolved" && (
                               <button
                                 onClick={() => advanceTicket(ticket.id)}
-                                className="w-full mt-2 inline-flex items-center justify-center gap-1 text-[10px] font-bold bg-white border border-surface-300 rounded hover:bg-surface-100 py-1 transition cursor-pointer text-surface-700"
+                                className="w-full mt-2 inline-flex items-center justify-center gap-1 text-[10px] font-bold bg-white border border-surface-300 rounded hover:bg-surface-100 py-1 transition cursor-pointer text-surface-700 dark:text-zinc-300"
                               >
                                 Advance status <ArrowRight className="w-3 h-3" />
                               </button>
@@ -947,7 +960,7 @@ export default function Dashboard({
                   </div>
                 ))}
               </div>
-              <div className="p-4 bg-surface-50 border border-surface-200 rounded-xl text-xs font-bold text-surface-500 uppercase tracking-wide">
+              <div className="p-4 bg-surface-50 border border-surface-200 rounded-xl text-xs font-bold text-surface-500 dark:text-zinc-500 uppercase tracking-wide">
                 Approving a card moves the asset to under maintenance, resolving return it to available
               </div>
             </div>
@@ -957,31 +970,31 @@ export default function Dashboard({
           {activeTab === "audit" && (
             <div className="max-w-6xl space-y-8">
               <div>
-                <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 font-sans uppercase">Asset Audit</h2>
-                <p className="text-sm text-surface-600 mt-1 font-medium">Verify locations and dynamically trigger discrepancy auto-generation.</p>
+                <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 dark:text-white dark:text-white font-sans uppercase">Asset Audit</h2>
+                <p className="text-sm text-surface-600 dark:text-zinc-400 dark:text-zinc-400 mt-1 font-medium">Verify locations and dynamically trigger discrepancy auto-generation.</p>
               </div>
 
               {/* Info Header Banner */}
-              <div className="bg-brand-50 border border-brand-200 rounded-xl p-5 text-brand-900 shadow-sm">
+              <div className="bg-brand-50 dark:bg-brand-950 border border-brand-200 dark:border-brand-900 rounded-xl p-5 text-brand-900 dark:text-brand-300 shadow-sm">
                 <h3 className="font-extrabold text-base tracking-wide font-sans">Q3 audit: Engineering dept - 1-15 Jul</h3>
                 <p className="text-xs font-semibold text-brand-850 mt-1">Auditors: aditi rao, sana iqbal</p>
               </div>
 
               {/* Audit Checklist Table */}
-              <div className="bg-white border border-surface-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="bg-white dark:bg-zinc-900 border border-surface-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm">
                 <table className="w-full text-left text-sm border-collapse">
                   <thead>
-                    <tr className="bg-surface-50 border-b border-surface-200 text-surface-700 font-bold uppercase tracking-wider text-xs">
+                    <tr className="bg-surface-50 border-b border-surface-200 text-surface-700 dark:text-zinc-300 font-bold uppercase tracking-wider text-xs">
                       <th className="p-4">Asset</th>
                       <th className="p-4">Expected location</th>
                       <th className="p-4 text-center">Verification (Click to Toggle)</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-surface-150 font-semibold text-surface-850">
+                  <tbody className="divide-y divide-surface-150 dark:divide-zinc-800 font-semibold text-surface-850 dark:text-zinc-200">
                     {auditAssets.map((asset, idx) => (
-                      <tr key={idx} className="hover:bg-surface-50/50">
+                      <tr key={idx} className="hover:bg-surface-50/50 dark:hover:bg-zinc-900/50">
                         <td className="p-4 font-bold text-surface-900">{asset.tag} {asset.name}</td>
-                        <td className="p-4 text-surface-600 font-mono">{asset.location}</td>
+                        <td className="p-4 text-surface-600 dark:text-zinc-400 font-mono">{asset.location}</td>
                         <td className="p-4 text-center">
                           <button
                             type="button"
@@ -1035,22 +1048,22 @@ export default function Dashboard({
             <div className="max-w-6xl space-y-8">
               <div className="flex justify-between items-center border-b border-surface-200 pb-4">
                 <div>
-                  <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 font-sans uppercase">Reports & Analytics</h2>
-                  <p className="text-sm text-surface-600 mt-1 font-medium">Verify department utilization and line-graph maintenance frequencies.</p>
+                  <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 dark:text-white dark:text-white font-sans uppercase">Reports & Analytics</h2>
+                  <p className="text-sm text-surface-600 dark:text-zinc-400 dark:text-zinc-400 mt-1 font-medium">Verify department utilization and line-graph maintenance frequencies.</p>
                 </div>
                 {/* Reports Mode Selector */}
-                <div className="flex gap-1.5 bg-surface-200/60 p-1.5 rounded-xl border border-surface-250 shrink-0">
+                <div className="flex gap-1.5 bg-surface-200/60 dark:bg-zinc-900/60 p-1.5 rounded-xl border border-surface-250 dark:border-zinc-800 shrink-0">
                   <button
                     type="button"
                     onClick={() => setReportsMode("assets")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${reportsMode === "assets" ? "bg-brand-900 text-white shadow" : "text-surface-700 hover:text-surface-900 hover:bg-surface-100"}`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${reportsMode === "assets" ? "bg-brand-900 text-white shadow" : "text-surface-700 dark:text-zinc-300 hover:text-surface-900 hover:bg-surface-100"}`}
                   >
                     Physical Assets
                   </button>
                   <button
                     type="button"
                     onClick={() => setReportsMode("crm")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${reportsMode === "crm" ? "bg-brand-900 text-white shadow" : "text-surface-700 hover:text-surface-900 hover:bg-surface-100"}`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${reportsMode === "crm" ? "bg-brand-900 text-white shadow" : "text-surface-700 dark:text-zinc-300 hover:text-surface-900 hover:bg-surface-100"}`}
                   >
                     CRM Analytics
                   </button>
@@ -1168,7 +1181,7 @@ export default function Dashboard({
               )}
 
               {/* Text summaries */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm font-semibold text-surface-700">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm font-semibold text-surface-700 dark:text-zinc-300">
                 {reportsMode === "assets" ? (
                   <>
                     {/* Most used */}
@@ -1241,8 +1254,8 @@ export default function Dashboard({
           {activeTab === "notifications" && (
             <div className="max-w-6xl space-y-8">
               <div>
-                <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 font-sans uppercase">Activity logs & Notifications</h2>
-                <p className="text-sm text-surface-600 mt-1 font-medium">Verify system audit logs and security-filtered notification feeds.</p>
+                <h2 className="text-2xl font-extrabold tracking-tight text-surface-900 dark:text-white dark:text-white font-sans uppercase">Activity logs & Notifications</h2>
+                <p className="text-sm text-surface-600 dark:text-zinc-400 dark:text-zinc-400 mt-1 font-medium">Verify system audit logs and security-filtered notification feeds.</p>
               </div>
 
               {/* Filters */}
@@ -1251,7 +1264,7 @@ export default function Dashboard({
                   <button
                     key={tab}
                     onClick={() => setLogFilter(tab)}
-                    className={`px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-colors ${logFilter === tab ? "bg-brand-900 text-white" : "bg-white border border-surface-200 text-surface-700 hover:bg-surface-50"}`}
+                    className={`px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-colors ${logFilter === tab ? "bg-brand-900 text-white" : "bg-white border border-surface-200 text-surface-700 dark:text-zinc-300 hover:bg-surface-50"}`}
                   >
                     {tab}
                   </button>
@@ -1259,16 +1272,16 @@ export default function Dashboard({
               </div>
 
               {/* Logs Checklist */}
-              <div className="bg-white border border-surface-200 rounded-xl overflow-hidden shadow-sm divide-y divide-surface-150 font-semibold text-sm text-surface-750">
+              <div className="bg-white dark:bg-zinc-900 border border-surface-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-sm divide-y divide-surface-150 font-semibold text-sm text-surface-750">
                 {logs
                   .filter(l => logFilter === "All" || l.type === logFilter)
                   .map((log, idx) => (
-                    <div key={idx} className="p-4 flex items-center justify-between hover:bg-surface-50/50">
+                    <div key={idx} className="p-4 flex items-center justify-between hover:bg-surface-50/50 dark:hover:bg-zinc-900/50">
                       <div className="flex items-center gap-3">
                         <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${log.color}`} />
                         <span>{log.text}</span>
                       </div>
-                      <span className="text-xs text-surface-400 font-mono font-normal shrink-0">{log.time}</span>
+                      <span className="text-xs text-surface-400 dark:text-zinc-550 font-mono font-normal shrink-0">{log.time}</span>
                     </div>
                   ))}
               </div>
@@ -1300,14 +1313,14 @@ export default function Dashboard({
       {/* Register Asset Modal */}
       {showRegisterModal && (
         <div className="fixed inset-0 z-50 bg-surface-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-surface-200 rounded-xl w-full max-w-md p-6 space-y-4 shadow-xl text-surface-900">
+          <div className="bg-white dark:bg-zinc-900 border border-surface-200 dark:border-zinc-800 rounded-xl w-full max-w-md p-6 space-y-4 shadow-xl text-surface-900 dark:text-zinc-100">
             <div className="flex justify-between items-center pb-2 border-b border-surface-200">
               <h3 className="text-base font-bold text-surface-900 uppercase tracking-wider font-sans">Register New Asset</h3>
-              <button onClick={() => setShowRegisterModal(false)} className="text-surface-400 hover:text-surface-700 font-bold">✕</button>
+              <button onClick={() => setShowRegisterModal(false)} className="text-surface-400 hover:text-surface-700 dark:text-zinc-300 font-bold">✕</button>
             </div>
             <form onSubmit={handleRegisterAsset} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-surface-600 uppercase tracking-wider">Asset Name</label>
+                <label className="text-xs font-bold text-surface-600 dark:text-zinc-400 uppercase tracking-wider">Asset Name</label>
                 <input
                   type="text"
                   placeholder="e.g. MacBook Pro M3"
@@ -1318,7 +1331,7 @@ export default function Dashboard({
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-surface-600 uppercase tracking-wider">Category</label>
+                <label className="text-xs font-bold text-surface-600 dark:text-zinc-400 uppercase tracking-wider">Category</label>
                 <select
                   value={assetCategory}
                   onChange={e => setAssetCategory(e.target.value)}
@@ -1345,14 +1358,14 @@ export default function Dashboard({
       {/* Book Resource Modal */}
       {showBookingModal && (
         <div className="fixed inset-0 z-50 bg-surface-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-surface-200 rounded-xl w-full max-w-md p-6 space-y-4 shadow-xl text-surface-900">
+          <div className="bg-white dark:bg-zinc-900 border border-surface-200 dark:border-zinc-800 rounded-xl w-full max-w-md p-6 space-y-4 shadow-xl text-surface-900 dark:text-zinc-100">
             <div className="flex justify-between items-center pb-2 border-b border-surface-200">
               <h3 className="text-base font-bold text-surface-900 uppercase tracking-wider font-sans">Book Shared Resource</h3>
-              <button onClick={() => setShowBookingModal(false)} className="text-surface-400 hover:text-surface-700 font-bold">✕</button>
+              <button onClick={() => setShowBookingModal(false)} className="text-surface-400 hover:text-surface-700 dark:text-zinc-300 font-bold">✕</button>
             </div>
             <form onSubmit={handleBookResource} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-surface-600 uppercase tracking-wider">Resource</label>
+                <label className="text-xs font-bold text-surface-600 dark:text-zinc-400 uppercase tracking-wider">Resource</label>
                 <select
                   value={bookingRoom}
                   onChange={e => setBookingRoom(e.target.value)}
@@ -1364,7 +1377,7 @@ export default function Dashboard({
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-surface-600 uppercase tracking-wider">Time Slot</label>
+                <label className="text-xs font-bold text-surface-600 dark:text-zinc-400 uppercase tracking-wider">Time Slot</label>
                 <input
                   type="text"
                   value={bookingTime}
@@ -1387,14 +1400,14 @@ export default function Dashboard({
       {/* Raise Request Modal */}
       {showRequestModal && (
         <div className="fixed inset-0 z-50 bg-surface-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-surface-200 rounded-xl w-full max-w-md p-6 space-y-4 shadow-xl text-surface-900">
+          <div className="bg-white dark:bg-zinc-900 border border-surface-200 dark:border-zinc-800 rounded-xl w-full max-w-md p-6 space-y-4 shadow-xl text-surface-900 dark:text-zinc-100">
             <div className="flex justify-between items-center pb-2 border-b border-surface-200">
               <h3 className="text-base font-bold text-surface-900 uppercase tracking-wider font-sans">Raise Maintenance Request</h3>
-              <button onClick={() => setShowRequestModal(false)} className="text-surface-400 hover:text-surface-700 font-bold">✕</button>
+              <button onClick={() => setShowRequestModal(false)} className="text-surface-400 hover:text-surface-700 dark:text-zinc-300 font-bold">✕</button>
             </div>
             <form onSubmit={handleRaiseRequest} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-surface-600 uppercase tracking-wider">Issue Description</label>
+                <label className="text-xs font-bold text-surface-600 dark:text-zinc-400 uppercase tracking-wider">Issue Description</label>
                 <input
                   type="text"
                   placeholder="e.g. Screen flickering, brake pads squeaking"
@@ -1418,14 +1431,14 @@ export default function Dashboard({
       {/* Add Department Modal (Org Setup Section) */}
       {showAddDeptModal && (
         <div className="fixed inset-0 z-50 bg-surface-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-surface-200 rounded-xl w-full max-w-md p-6 space-y-4 shadow-xl text-surface-900">
+          <div className="bg-white dark:bg-zinc-900 border border-surface-200 dark:border-zinc-800 rounded-xl w-full max-w-md p-6 space-y-4 shadow-xl text-surface-900 dark:text-zinc-100">
             <div className="flex justify-between items-center pb-2 border-b border-surface-200">
               <h3 className="text-base font-bold text-surface-900 uppercase tracking-wider font-sans">Add Department</h3>
-              <button onClick={() => setShowAddDeptModal(false)} className="text-surface-400 hover:text-surface-700 font-bold">✕</button>
+              <button onClick={() => setShowAddDeptModal(false)} className="text-surface-400 hover:text-surface-700 dark:text-zinc-300 font-bold">✕</button>
             </div>
             <form onSubmit={handleAddDept} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-surface-600 uppercase tracking-wider">Department Name</label>
+                <label className="text-xs font-bold text-surface-600 dark:text-zinc-400 uppercase tracking-wider">Department Name</label>
                 <input
                   type="text"
                   placeholder="e.g. Engineering, Sales"
@@ -1436,7 +1449,7 @@ export default function Dashboard({
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-surface-600 uppercase tracking-wider">Department Head</label>
+                <label className="text-xs font-bold text-surface-600 dark:text-zinc-400 uppercase tracking-wider">Department Head</label>
                 <input
                   type="text"
                   placeholder="e.g. Priya Shah"
@@ -1447,7 +1460,7 @@ export default function Dashboard({
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-surface-600 uppercase tracking-wider">Parent Department</label>
+                <label className="text-xs font-bold text-surface-600 dark:text-zinc-400 uppercase tracking-wider">Parent Department</label>
                 <input
                   type="text"
                   placeholder="e.g. Operations, IT"

@@ -16,6 +16,7 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
   const [isAdminView, setIsAdminView] = useState(false);
+  const [themeMode, setThemeMode] = useState<"light" | "dark">("light");
 
   // Check auth state on mount
   useEffect(() => {
@@ -72,6 +73,8 @@ export default function App() {
           username={username}
           onLogout={handleLogout}
           onSwitchToEmployee={() => setIsAdminView(false)}
+          themeMode={themeMode}
+          setThemeMode={setThemeMode}
         />
       );
     }
@@ -80,6 +83,8 @@ export default function App() {
         username={username}
         onLogout={handleLogout}
         onSwitchToAdmin={() => setIsAdminView(true)}
+        themeMode={themeMode}
+        setThemeMode={setThemeMode}
       />
     );
   }
