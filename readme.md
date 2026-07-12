@@ -946,7 +946,7 @@ assetflow
 
 # What Makes AssetFlow Different
 
-- Enterprise-grade workflow
+- Enterprise-grade Workflow
 - Real role hierarchy
 - Conflict prevention
 - Complete asset lifecycle
