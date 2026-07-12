@@ -1,0 +1,381 @@
+// ─── AssetFlow — Prisma Schema ──────────────────────────────────────────────
+// Enterprise Asset & Resource Management System
+// 16 models with full relational integrity
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum AssetStatus {
+  AVAILABLE
+  ALLOCATED
+  MAINTENANCE
+  LOST
+  DISPOSED
+  RETIRED
+}
+
+enum TransferStatus {
+  REQUESTED
+  DEPT_HEAD_APPROVED
+  ASSET_MANAGER_APPROVED
+  TRANSFERRED
+  REJECTED
+}
+
+enum MaintenanceStatus {
+  PENDING
+  APPROVED
+  TECHNICIAN_ASSIGNED
+  IN_PROGRESS
+  RESOLVED
+}
+
+enum AuditItemStatus {
+  VERIFIED
+  MISSING
+  DAMAGED
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum NotificationType {
+  ASSET_ASSIGNED
+  ASSET_RETURNED
+  TRANSFER_REQUESTED
+  TRANSFER_APPROVED
+  TRANSFER_REJECTED
+  BOOKING_CONFIRMED
+  BOOKING_CANCELLED
+  BOOKING_REMINDER
+  MAINTENANCE_REQUESTED
+  MAINTENANCE_APPROVED
+  MAINTENANCE_RESOLVED
+  AUDIT_ASSIGNED
+  OVERDUE_RETURN
+  GENERAL
+}
+
+// ─── Models ─────────────────────────────────────────────────────────────────
+
+model Role {
+  id        String   @id @default(cuid())
+  name      String   @unique // Administrator, Asset Manager, Department Head, Employee
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("roles")
+}
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique
+  password     String
+  avatar       String?
+  status       UserStatus @default(ACTIVE)
+  
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id])
+  
+  departmentId String?
+  department   Department? @relation("DepartmentEmployees", fields: [departmentId], references: [id])
+
+  // Refresh token for JWT rotation
+  refreshToken String?
+
+  // Relations
+  allocatedAssets   AssetAllocation[]   @relation("AllocatedTo")
+  assetHistory      AssetHistory[]
+  transfersFrom     TransferRequest[]   @relation("TransferFrom")
+  transfersTo       TransferRequest[]   @relation("TransferTo")
+  transferApprovals TransferRequest[]   @relation("TransferApprover")
+  bookings          Booking[]
+  maintenanceReqs   MaintenanceRequest[] @relation("MaintenanceRequester")
+  notifications     Notification[]
+  activityLogs      ActivityLog[]
+  generatedReports  Report[]
+  auditAssignments  AuditCycle[]        @relation("AuditAuditors")
+  
+  // Department head relation
+  headOfDepartments Department[]        @relation("DepartmentHead")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Department {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  description String?
+  status      UserStatus @default(ACTIVE)
+
+  // Self-relation for parent/child hierarchy
+  parentId    String?
+  parent      Department?  @relation("DepartmentHierarchy", fields: [parentId], references: [id])
+  children    Department[] @relation("DepartmentHierarchy")
+
+  // Head of department
+  headId      String?
+  head        User?      @relation("DepartmentHead", fields: [headId], references: [id])
+
+  // Employees in this department
+  employees   User[]     @relation("DepartmentEmployees")
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("departments")
+}
+
+model AssetCategory {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  description String?
+  iconName    String     @default("Laptop")
+  status      UserStatus @default(ACTIVE)
+
+  assets       Asset[]
+  customFields CustomField[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("asset_categories")
+}
+
+model CustomField {
+  id       String  @id @default(cuid())
+  name     String
+  type     String  // Text, Number, Date, Dropdown
+  required Boolean @default(false)
+
+  categoryId String
+  category   AssetCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@map("custom_fields")
+}
+
+model Asset {
+  id           String      @id @default(cuid())
+  tag          String      @unique // e.g. AF-0012
+  name         String
+  serialNumber String?
+  qrCode       String?
+  status       AssetStatus @default(AVAILABLE)
+  location     String?
+  imageUrl     String?
+  purchaseDate DateTime?
+  purchaseCost Float?
+  warrantyExpiry DateTime?
+
+  categoryId   String
+  category     AssetCategory @relation(fields: [categoryId], references: [id])
+
+  // Current allocation
+  allocatedToId String?
+
+  // Relations
+  allocations   AssetAllocation[]
+  history       AssetHistory[]
+  transfers     TransferRequest[]
+  maintenance   MaintenanceRequest[]
+  auditItems    AuditItem[]
+  bookings      Booking[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("assets")
+}
+
+model AssetHistory {
+  id      String   @id @default(cuid())
+  event   String
+  details String?
+  date    DateTime @default(now())
+
+  assetId String
+  asset   Asset  @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  userId  String?
+  user    User?  @relation(fields: [userId], references: [id])
+
+  @@map("asset_history")
+}
+
+model AssetAllocation {
+  id          String    @id @default(cuid())
+  allocatedAt DateTime  @default(now())
+  returnedAt  DateTime?
+  returnCondition String?
+  isActive    Boolean   @default(true)
+
+  assetId     String
+  asset       Asset     @relation(fields: [assetId], references: [id])
+
+  userId      String
+  user        User      @relation("AllocatedTo", fields: [userId], references: [id])
+
+  @@unique([assetId, isActive]) // Prevent double allocation
+  @@map("asset_allocations")
+}
+
+model TransferRequest {
+  id       String         @id @default(cuid())
+  reason   String?
+  status   TransferStatus @default(REQUESTED)
+
+  assetId  String
+  asset    Asset          @relation(fields: [assetId], references: [id])
+
+  fromUserId String
+  fromUser   User         @relation("TransferFrom", fields: [fromUserId], references: [id])
+
+  toUserId   String
+  toUser     User         @relation("TransferTo", fields: [toUserId], references: [id])
+
+  approvedById String?
+  approvedBy   User?      @relation("TransferApprover", fields: [approvedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("transfer_requests")
+}
+
+model Booking {
+  id           String        @id @default(cuid())
+  resourceName String        // e.g. "Conference room B2"
+  resourceType String        @default("room") // room, vehicle, equipment
+  date         DateTime
+  startTime    String        // "09:00"
+  endTime      String        // "10:00"
+  status       BookingStatus @default(CONFIRMED)
+  notes        String?
+
+  userId       String
+  user         User          @relation(fields: [userId], references: [id])
+
+  // Optional: link to a specific asset
+  assetId      String?
+  asset        Asset?        @relation(fields: [assetId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("bookings")
+}
+
+model MaintenanceRequest {
+  id             String            @id @default(cuid())
+  issue          String
+  status         MaintenanceStatus @default(PENDING)
+  technicianName String?
+  imageUrl       String?
+  resolvedAt     DateTime?
+  notes          String?
+
+  assetId        String
+  asset          Asset             @relation(fields: [assetId], references: [id])
+
+  requestedById  String
+  requestedBy    User              @relation("MaintenanceRequester", fields: [requestedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("maintenance_requests")
+}
+
+model AuditCycle {
+  id         String     @id @default(cuid())
+  name       String     // e.g. "Q3 audit: Engineering dept"
+  department String
+  startDate  DateTime
+  endDate    DateTime
+  isOpen     Boolean    @default(true)
+
+  items      AuditItem[]
+  auditors   User[]     @relation("AuditAuditors")
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@map("audit_cycles")
+}
+
+model AuditItem {
+  id       String          @id @default(cuid())
+  status   AuditItemStatus @default(VERIFIED)
+
+  auditCycleId String
+  auditCycle   AuditCycle  @relation(fields: [auditCycleId], references: [id], onDelete: Cascade)
+
+  assetId      String
+  asset        Asset       @relation(fields: [assetId], references: [id])
+
+  @@map("audit_items")
+}
+
+model Notification {
+  id      String           @id @default(cuid())
+  type    NotificationType @default(GENERAL)
+  message String
+  isRead  Boolean          @default(false)
+
+  userId  String
+  user    User             @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+model ActivityLog {
+  id             String   @id @default(cuid())
+  action         String   // e.g. "ASSET_CREATED", "TRANSFER_APPROVED"
+  targetResource String?  // e.g. "Asset", "Department"
+  targetId       String?  // The ID of the resource
+  details        String?
+  category       String?  // "Alerts", "Approvals", "Bookings"
+
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@map("activity_logs")
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  type        String   // "utilization", "maintenance", "audit_discrepancy"
+  title       String
+  data        Json?    // Flexible JSON blob for report data
+  generatedAt DateTime @default(now())
+
+  generatedById String
+  generatedBy   User   @relation(fields: [generatedById], references: [id])
+
+  @@map("reports")
+}

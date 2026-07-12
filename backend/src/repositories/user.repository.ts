@@ -1,0 +1,93 @@
+// ─── User Repository ────────────────────────────────────────────────────────
+import prisma from '../config/database';
+import { Prisma } from '@prisma/client';
+
+export class UserRepository {
+  async findById(id: string) {
+    return prisma.user.findUnique({
+      where: { id },
+      include: { role: true, department: { include: { parent: true } } },
+    });
+  }
+
+  async findByEmail(email: string) {
+    return prisma.user.findUnique({
+      where: { email },
+      include: { role: true, department: true },
+    });
+  }
+
+  async create(data: Prisma.UserCreateInput) {
+    return prisma.user.create({
+      data,
+      include: { role: true, department: true },
+    });
+  }
+
+  async update(id: string, data: Prisma.UserUpdateInput) {
+    return prisma.user.update({
+      where: { id },
+      data,
+      include: { role: true, department: true },
+    });
+  }
+
+  async delete(id: string) {
+    return prisma.user.delete({ where: { id } });
+  }
+
+  async findAll(params: {
+    skip?: number;
+    take?: number;
+    where?: Prisma.UserWhereInput;
+    orderBy?: Prisma.UserOrderByWithRelationInput;
+  }) {
+    const { skip, take, where, orderBy } = params;
+    const [data, total] = await Promise.all([
+      prisma.user.findMany({
+        skip,
+        take,
+        where,
+        orderBy,
+        include: {
+          role: true,
+          department: { include: { parent: true } },
+        },
+      }),
+      prisma.user.count({ where }),
+    ]);
+    return { data, total };
+  }
+
+  async updateRefreshToken(id: string, refreshToken: string | null) {
+    return prisma.user.update({
+      where: { id },
+      data: { refreshToken },
+    });
+  }
+
+  async findByRefreshToken(refreshToken: string) {
+    return prisma.user.findFirst({
+      where: { refreshToken },
+      include: { role: true },
+    });
+  }
+
+  async getRoleByName(name: string) {
+    return prisma.role.findUnique({ where: { name } });
+  }
+
+  async countByRole(roleName: string) {
+    return prisma.user.count({
+      where: { role: { name: roleName } },
+    });
+  }
+
+  async countActive() {
+    return prisma.user.count({
+      where: { status: 'ACTIVE' },
+    });
+  }
+}
+
+export default new UserRepository();
