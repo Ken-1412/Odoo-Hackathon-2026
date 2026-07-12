@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -95,3 +97,12 @@
   .slider-3d .item-3d { transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(170px); }
   .slider-3d .item-3d:hover { transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(185px) scale(1.05); }
 }
+
+.font-doto {
+  font-family: 'Doto', monospace;
+}
+
+.font-roboto {
+  font-family: 'Roboto', sans-serif;
+}
+

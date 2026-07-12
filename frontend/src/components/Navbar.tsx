@@ -1,7 +1,20 @@
 import { useState } from 'react';
-import { Menu, X, Layers } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import Logo from './ui/Logo';
 
-export default function Navbar() {
+interface NavbarProps {
+  isAuthenticated: boolean;
+  username: string | null;
+  onLoginClick: () => void;
+  onLogoutClick: () => void;
+}
+
+export default function Navbar({
+  isAuthenticated,
+  username,
+  onLoginClick,
+  onLogoutClick
+}: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
@@ -16,8 +29,8 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <a href="#" className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-md bg-brand-900 flex items-center justify-center">
-              <Layers className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 rounded-md bg-brand-900 flex items-center justify-center p-1">
+              <Logo className="w-full h-full text-white" />
             </div>
             <span className="text-lg font-bold tracking-tight text-surface-900 font-sans">
               Asset<span className="text-brand-900">Flow</span>
@@ -37,14 +50,30 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Desktop CTA Login Button */}
-          <div className="hidden md:flex items-center">
-            <a
-              href="#login"
-              className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md text-sm font-bold bg-brand-900 hover:bg-brand-800 text-white shadow-sm transition-all font-sans"
-            >
-              Login
-            </a>
+          {/* Desktop CTA Login Button / Auth Controls */}
+          <div className="hidden md:flex items-center space-x-4">
+            {isAuthenticated ? (
+              <>
+                <span className="text-sm font-semibold text-surface-700">
+                  Welcome, <span className="text-brand-900 font-bold">{username}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={onLogoutClick}
+                  className="inline-flex items-center justify-center px-4 py-2 border border-brand-900 rounded-md text-sm font-bold text-brand-900 hover:bg-brand-50 shadow-sm transition-all font-sans cursor-pointer"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={onLoginClick}
+                className="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md text-sm font-bold bg-brand-900 hover:bg-brand-800 text-white shadow-sm transition-all font-sans cursor-pointer"
+              >
+                Login
+              </button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -75,14 +104,35 @@ export default function Navbar() {
               {link.name}
             </a>
           ))}
-          <div className="pt-4 border-t border-surface-250 flex flex-col px-3">
-            <a
-              href="#login"
-              onClick={() => setIsOpen(false)}
-              className="text-center py-2.5 rounded-md text-base font-bold bg-brand-900 hover:bg-brand-800 text-white shadow-sm"
-            >
-              Login
-            </a>
+          <div className="pt-4 border-t border-surface-250 flex flex-col px-3 space-y-2">
+            {isAuthenticated ? (
+              <>
+                <span className="text-center text-sm font-semibold text-surface-700 pb-2">
+                  Logged in as <span className="text-brand-900 font-bold">{username}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOpen(false);
+                    onLogoutClick();
+                  }}
+                  className="text-center py-2.5 rounded-md text-base font-bold border border-brand-900 text-brand-900 hover:bg-brand-50 shadow-sm cursor-pointer"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  onLoginClick();
+                }}
+                className="text-center py-2.5 rounded-md text-base font-bold bg-brand-900 hover:bg-brand-800 text-white shadow-sm cursor-pointer"
+              >
+                Login
+              </button>
+            )}
           </div>
         </div>
       </div>

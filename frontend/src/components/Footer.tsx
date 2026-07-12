@@ -1,4 +1,5 @@
-import { Layers, Mail, Phone, MapPin, ShieldCheck } from 'lucide-react';
+import { Mail, Phone, MapPin, ShieldCheck } from 'lucide-react';
+import Logo from './ui/Logo';
 
 export default function Footer() {
   return (
@@ -8,8 +9,8 @@ export default function Footer() {
           {/* Brand Info */}
           <div className="md:col-span-4 space-y-4">
             <a href="#" className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-md bg-brand-900 flex items-center justify-center">
-                <Layers className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 rounded-md bg-brand-900 flex items-center justify-center p-1">
+                <Logo className="w-full h-full text-white" />
               </div>
               <span className="text-lg font-bold tracking-tight text-surface-900">
                 Asset<span className="text-brand-900">Flow</span>
