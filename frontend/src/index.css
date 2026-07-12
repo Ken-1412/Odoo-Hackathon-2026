@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-surface-50 text-surface-900 antialiased selection:bg-brand-500 selection:text-white font-sans overflow-x-hidden;
+  }
+}
+
+/* Enterprise scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #F8F9FA; }
+::-webkit-scrollbar-thumb { background: #CED4DA; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #003B5C; }
+
+/* Subtle background patterns */
+.bg-grid-pattern {
+  background-size: 48px 48px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 59, 92, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 59, 92, 0.03) 1px, transparent 1px);
+}
+.bg-dot-pattern {
+  background-size: 24px 24px;
+  background-image: radial-gradient(rgba(0, 59, 92, 0.04) 1px, transparent 1px);
+}
+
+/* Hero-to-content transition */
+.hero-transition-band {
+  background: linear-gradient(
+    to bottom,
+    #000000 0%,
+    #001020 20%,
+    #003B5C 45%,
+    #b3e0f4 75%,
+    #F8F9FA 100%
+  );
+}
+
+/* ==========================================
+   3D CAROUSEL SLIDER STYLES
+   ========================================== */
+.slider-3d-container {
+  width: 100%;
+  height: 520px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: visible;
+  perspective: 1500px;
+}
+.slider-3d {
+  position: relative;
+  width: 240px;
+  height: 340px;
+  transform-style: preserve-3d;
+  transform: perspective(1500px) rotateX(-10deg) rotateY(0deg) translateY(0px);
+  animation: autoRunCarousel 50s linear infinite;
+  transition: transform 0.5s ease-out;
+}
+.slider-3d-container:hover .slider-3d {
+  animation-play-state: paused;
+}
+.slider-3d .item-3d {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  backface-visibility: visible;
+  transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(300px);
+  transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
+}
+.slider-3d .item-3d:hover {
+  transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(330px) scale(1.08);
+  z-index: 50;
+}
+@keyframes autoRunCarousel {
+  0%   { transform: perspective(1500px) rotateX(-10deg) rotateY(0deg) translateY(0px); }
+  25%  { transform: perspective(1500px) rotateX(-12deg) rotateY(90deg) translateY(-10px); }
+  50%  { transform: perspective(1500px) rotateX(-10deg) rotateY(180deg) translateY(0px); }
+  75%  { transform: perspective(1500px) rotateX(-8deg) rotateY(270deg) translateY(10px); }
+  100% { transform: perspective(1500px) rotateX(-10deg) rotateY(360deg) translateY(0px); }
+}
+
+@media (max-width: 1024px) {
+  .slider-3d-container { height: 460px; }
+  .slider-3d { width: 200px; height: 290px; }
+  .slider-3d .item-3d { transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(240px); }
+  .slider-3d .item-3d:hover { transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(265px) scale(1.06); }
+}
+@media (max-width: 768px) {
+  .slider-3d-container { height: 380px; }
+  .slider-3d { width: 160px; height: 240px; }
+  .slider-3d .item-3d { transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(170px); }
+  .slider-3d .item-3d:hover { transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(185px) scale(1.05); }
+}
