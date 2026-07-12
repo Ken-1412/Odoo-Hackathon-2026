@@ -1,659 +1,189 @@
-# AssetFlow
-### Enterprise Asset & Resource Management System
+# 🚀 AssetFlow – Enterprise Asset & Resource Management System
 
-> **Hackathon Project (8 Hours)**
->
-> AssetFlow is a modern Enterprise Resource Planning (ERP) platform that digitizes the complete lifecycle of organizational assets and shared resources. The platform eliminates manual spreadsheets and paper-based tracking by providing centralized asset management, resource booking, maintenance workflows, audits, analytics, and role-based access control.
+<div align="center">
 
----
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
+![Next.js](https://img.shields.io/badge/Next.js-15-black)
+![Node.js](https://img.shields.io/badge/Node.js-Express-green)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)
+![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748)
+![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED)
 
-# Table of Contents
+**A modern Enterprise Resource Planning (ERP) platform for managing organizational assets, shared resources, maintenance workflows, and audits.**
 
-- Overview
-- Problem Statement
-- Objectives
-- Features
-- User Roles
-- System Workflow
-- Tech Stack
-- System Architecture
-- Folder Structure
-- Database Design
-- API Design
-- Business Rules
-- Asset Lifecycle
-- Resource Booking Logic
-- Maintenance Workflow
-- Audit Workflow
-- Dashboard & Analytics
-- Notifications
-- Security
-- Future Scope
-- Hackathon Development Plan
-- Deployment
+</div>
 
 ---
 
-# Overview
+# 📖 Overview
 
-Organizations such as companies, universities, hospitals, factories, and government agencies often struggle to efficiently manage physical assets like laptops, projectors, vehicles, furniture, meeting rooms, and other shared resources.
+AssetFlow is a full-stack **Enterprise Asset & Resource Management System** developed during an **8-hour hackathon**.
 
-Traditional spreadsheet-based tracking leads to:
+The platform replaces spreadsheet-based asset tracking with a centralized ERP solution that enables organizations to efficiently manage physical assets, shared resources, maintenance requests, audits, and role-based workflows.
 
-- Lost assets
-- Double allocation
-- Booking conflicts
-- Maintenance delays
-- Missing audit trails
-- No centralized visibility
+The application is designed with a scalable architecture and can be used by:
 
-AssetFlow solves these problems through a centralized ERP platform that manages the complete lifecycle of every organizational asset.
-
----
-
-# Problem Statement
-
-Build an Enterprise Asset & Resource Management System capable of:
-
-- Managing departments and employees
-- Managing asset categories
-- Registering organizational assets
-- Tracking complete asset lifecycle
-- Preventing duplicate allocations
-- Booking shared resources
-- Handling maintenance approval workflow
-- Managing scheduled audits
-- Providing reports and analytics
-- Maintaining activity logs
-- Sending notifications
-- Role-based access control
+- 🏢 Companies
+- 🎓 Universities
+- 🏥 Hospitals
+- 🏭 Manufacturing Industries
+- 🏛 Government Organizations
 
 ---
 
-# Objectives
+# ✨ Features
 
-The platform should enable organizations to:
+### 🔐 Authentication
 
-- Digitally manage all physical assets
-- Track ownership and responsibility
-- Prevent conflicts automatically
-- Improve resource utilization
-- Simplify maintenance management
-- Conduct structured audits
-- Generate operational insights
-- Maintain accountability
-
----
-
-# Core Features
-
-## Authentication
-
-- Employee Signup
 - Secure Login
-- Forgot Password
+- Employee Registration
 - JWT Authentication
+- Password Encryption (bcrypt)
+- Role-Based Access Control
 - Session Validation
 
-Employees cannot assign their own roles.
+---
 
-Only Admin can promote users.
+### 👥 Organization Management
+
+- Department Management
+- Employee Directory
+- Asset Categories
+- Department Hierarchy
+- Role Assignment
 
 ---
 
-## Dashboard
+### 💻 Asset Management
 
-Real-time overview including:
-
-- Total Assets
-- Available Assets
-- Allocated Assets
-- Under Maintenance
-- Active Bookings
-- Pending Transfers
-- Upcoming Returns
-- Overdue Returns
-- Pending Maintenance Requests
-
-Quick Actions
-
-- Register Asset
-- Book Resource
-- Raise Maintenance Request
+- Asset Registration
+- Asset Directory
+- QR Code Support
+- Asset Tag Generation
+- Search & Filtering
+- Asset Lifecycle Tracking
+- Asset Documents
+- Asset Images
 
 ---
 
-## Organization Setup
+### 🔄 Asset Allocation
 
-### Department Management
-
-- Create Department
-- Edit Department
-- Deactivate Department
-- Parent Department
-- Department Head Assignment
-
-### Asset Categories
-
-Examples
-
-- Electronics
-- Furniture
-- Vehicles
-- Networking
-- Meeting Rooms
-
-Each category supports custom fields.
-
-Example
-
-Electronics
-
-- Warranty
-- Brand
-- Model
-
-Vehicle
-
-- Registration Number
-- Insurance
-- Fuel Type
-
-### Employee Directory
-
-Stores
-
-- Name
-- Email
-- Department
-- Role
-- Status
-
-Admin can promote
-
-Employee →
-
-- Department Head
-- Asset Manager
+- Employee Allocation
+- Department Allocation
+- Return Workflow
+- Transfer Requests
+- Approval Workflow
+- Allocation History
+- Conflict Detection
 
 ---
 
-## Asset Management
-
-Each asset contains
-
-- Asset Tag
-- Name
-- Category
-- Department
-- Serial Number
-- Acquisition Date
-- Acquisition Cost
-- Condition
-- Current Status
-- Current Holder
-- QR Code
-- Location
-- Images
-- Documents
-
-Search Filters
-
-- Asset Tag
-- QR Code
-- Category
-- Department
-- Status
-- Location
-- Serial Number
-
----
-
-## Asset Allocation
-
-Allocate assets to
-
-- Employee
-- Department
-
-System validates
-
-- Asset already allocated
-- Asset under maintenance
-- Asset retired
-- Asset disposed
-
-If already allocated
-
-System blocks allocation
-
-Instead offers
-
-Transfer Request
-
----
-
-## Transfer Workflow
-
-```
-Employee Requests Transfer
-
-↓
-
-Department Head Approval
-
-↓
-
-Asset Manager Approval
-
-↓
-
-Asset Reallocated
-
-↓
-
-History Updated
-```
-
----
-
-## Return Workflow
-
-```
-Employee Initiates Return
-
-↓
-
-Asset Manager Reviews
-
-↓
-
-Condition Check
-
-↓
-
-Status Updated
-
-↓
-
-Available Again
-```
-
----
-
-## Resource Booking
-
-Book
+### 📅 Resource Booking
 
 - Meeting Rooms
 - Vehicles
 - Equipment
-- Labs
+- Laboratories
 
 Features
 
 - Calendar View
 - Time Slot Booking
-- Conflict Detection
-- Reminder Notifications
-- Cancel Booking
-- Reschedule Booking
-
-Booking Status
-
-- Upcoming
-- Ongoing
-- Completed
-- Cancelled
+- Booking History
+- Conflict Prevention
+- Rescheduling
+- Cancellation
 
 ---
 
-## Maintenance
+### 🛠 Maintenance Management
 
-Employees can
-
-Raise Maintenance Request
-
-Workflow
-
-```
-Pending
-
-↓
-
-Approved
-
-↓
-
-Technician Assigned
-
-↓
-
-In Progress
-
-↓
-
-Resolved
-
-↓
-
-Available Again
-```
-
-Maintenance History retained forever.
+- Raise Maintenance Requests
+- Approval Workflow
+- Technician Assignment
+- Resolution Tracking
+- Maintenance History
 
 ---
 
-## Audit Management
+### 📋 Audit Management
 
-Create Audit Cycle
-
-Assign Auditors
-
-Audit Status
-
-- Verified
-- Missing
-- Damaged
-
-Automatically generates
-
-Discrepancy Report
+- Audit Cycles
+- Auditor Assignment
+- Verification Workflow
+- Discrepancy Reports
+- Audit History
 
 ---
 
-## Reports
+### 📊 Dashboard & Reports
 
-Generate
-
-- Department Allocation Report
+- KPI Cards
 - Asset Utilization
-- Booking Heatmap
-- Maintenance Report
-- Asset Aging Report
-- Upcoming Retirement
-- Idle Assets
+- Booking Analytics
+- Maintenance Reports
+- Department Reports
+- Asset Aging
+- Export Reports
+
+---
+
+### 🔔 Notifications
+
+- Asset Assignment
+- Booking Reminder
+- Maintenance Updates
+- Transfer Approval
+- Audit Alerts
 - Overdue Returns
 
-Export
-
-- PDF
-- CSV
-
 ---
 
-## Notifications
-
-Examples
-
-- Asset Assigned
-- Transfer Approved
-- Booking Confirmed
-- Booking Reminder
-- Maintenance Approved
-- Maintenance Completed
-- Audit Assigned
-- Overdue Return
-- Asset Returned
-
----
-
-## Activity Logs
+### 📜 Activity Logs
 
 Tracks
 
-Who
-
-Did What
-
-When
-
-For Every Action
+- User Actions
+- Asset Changes
+- Transfers
+- Maintenance
+- Audit Activities
 
 ---
 
-# User Roles
-
-## Admin
-
-Permissions
-
-- Manage Departments
-- Manage Categories
-- Manage Employees
-- Assign Roles
-- View Analytics
-- Create Audit Cycles
-- Full System Access
-
----
-
-## Asset Manager
-
-Permissions
-
-- Register Assets
-- Allocate Assets
-- Approve Transfers
-- Approve Maintenance
-- Approve Returns
-
----
-
-## Department Head
-
-Permissions
-
-- View Department Assets
-- Approve Department Transfers
-- Book Resources
-- View Department Reports
-
----
-
-## Employee
-
-Permissions
-
-- View Own Assets
-- Raise Maintenance Request
-- Book Resources
-- Request Transfers
-- Request Returns
-
----
-
-# Asset Lifecycle
+# 🏗 System Architecture
 
 ```
-Available
-
-↓
-
-Allocated
-
-↓
-
-Returned
-
-↓
-
-Available
-```
-
-Alternative flows
-
-```
-Available
-
-↓
-
-Maintenance
-
-↓
-
-Available
-```
-
-```
-Available
-
-↓
-
-Lost
-```
-
-```
-Available
-
-↓
-
-Retired
-```
-
-```
-Available
-
-↓
-
-Disposed
-```
-
-Every state transition is validated.
-
----
-
-# Business Rules
-
-## Allocation Rules
-
-- One asset can belong to only one employee at a time.
-- Double allocation is prohibited.
-- Retired assets cannot be allocated.
-- Maintenance assets cannot be allocated.
-
----
-
-## Booking Rules
-
-Bookings cannot overlap.
-
-Example
-
-```
-9:00 — 10:00
-
-Booked
-
-9:30 — 10:30
-
-Rejected
-
-10:00 — 11:00
-
-Accepted
+                    Next.js Frontend
+                           │
+                    REST API (HTTP)
+                           │
+                    Express.js Backend
+                           │
+                      Prisma ORM
+                           │
+                     PostgreSQL
+                           │
+                      Persistent Data
 ```
 
 ---
 
-## Maintenance Rules
-
-Only Asset Manager approves maintenance.
-
-Asset automatically changes
-
-Available
-
-↓
-
-Under Maintenance
-
-↓
-
-Available
-
----
-
-## Audit Rules
-
-Only active assets can be audited.
-
-Closing audit automatically updates
-
-Missing
-
-↓
-
-Lost
-
----
-
-# System Workflow
-
-```
-Signup
-
-↓
-
-Employee
-
-↓
-
-Admin Assigns Role
-
-↓
-
-Register Assets
-
-↓
-
-Allocate Assets
-
-↓
-
-Book Resources
-
-↓
-
-Maintenance
-
-↓
-
-Transfers
-
-↓
-
-Returns
-
-↓
-
-Audit
-
-↓
-
-Reports
-
-↓
-
-Notifications
-```
-
----
-
-# Suggested Tech Stack
+# 🛠 Tech Stack
 
 ## Frontend
 
 - Next.js 15
 - TypeScript
 - Tailwind CSS
-- shadcn/ui
-- Framer Motion
-- TanStack Query
 - React Hook Form
-- Zod
+- TanStack Query
+- Framer Motion
 - Recharts
 - FullCalendar
+- Zod
 
 ---
 
@@ -664,11 +194,23 @@ Notifications
 - TypeScript
 - Prisma ORM
 - PostgreSQL
-- Redis
 - JWT
-- Bcrypt
+- bcrypt
 - Multer
-- Cloudinary
+
+---
+
+## Database
+
+- PostgreSQL
+- Prisma ORM
+
+---
+
+## DevOps
+
+- Docker
+- Docker Compose
 
 ---
 
@@ -676,186 +218,135 @@ Notifications
 
 Frontend
 
-Vercel
+- Vercel
 
 Backend
 
-Railway / Render
+- Railway / Render
 
 Database
 
-Neon PostgreSQL
-
-Redis
-
-Upstash
+- Neon PostgreSQL
 
 Storage
 
-Cloudinary
+- Cloudinary
 
 ---
 
-# Folder Structure
+# 📂 Project Structure
 
 ```
-assetflow
-
-│
+AssetFlow
 
 ├── frontend
-
-│   ├── app
-
-│   ├── components
-
-│   ├── features
-
-│   │
-
-│   ├── assets
-
-│   ├── booking
-
-│   ├── maintenance
-
-│   ├── dashboard
-
-│   ├── audit
-
-│   ├── reports
-
-│   ├── hooks
-
-│   ├── services
-
-│   └── utils
-
+│   ├── public
+│   ├── src
+│   └── package.json
 │
-
 ├── backend
-
+│   ├── config
 │   ├── controllers
-
+│   ├── middlewares
+│   ├── repositories
 │   ├── routes
-
-│   ├── middleware
-
 │   ├── services
-
-│   ├── validations
-
+│   ├── types
+│   ├── utils
+│   ├── validators
 │   ├── prisma
-
-│   ├── jobs
-
-│   ├── websocket
-
-│   └── utils
-
+│   │   ├── schema.prisma
+│   │   └── seed.ts
+│   └── server.ts
 │
-
+├── docker-compose.yml
 └── README.md
 ```
 
 ---
 
-# Database Tables
+# 🗄 Database
+
+The application uses **PostgreSQL** with **Prisma ORM**.
+
+Main entities include:
 
 - Users
 - Departments
-- AssetCategories
+- Roles
 - Assets
-- AssetHistory
+- Asset Categories
 - Allocations
 - Transfers
+- Resources
 - Bookings
-- MaintenanceRequests
-- AuditCycles
-- AuditItems
+- Maintenance Requests
+- Audit Cycles
 - Notifications
-- ActivityLogs
+- Activity Logs
 
 ---
 
-# API Modules
+# 📈 Asset Lifecycle
 
-## Authentication
+```
+Available
+     │
+     ▼
+Allocated
+     │
+     ▼
+Returned
+     │
+     ▼
+Available
 
-- Login
-- Signup
-- Forgot Password
-- Refresh Token
+Alternative States
 
-## Departments
-
-- Create
-- Update
-- Delete
-- List
-
-## Categories
-
-- CRUD
-
-## Assets
-
-- Register
-- Update
-- Delete
-- Search
-
-## Allocation
-
-- Allocate
-- Return
-- Transfer
-
-## Booking
-
-- Create
-- Cancel
-- Update
-
-## Maintenance
-
-- Raise
-- Approve
-- Resolve
-
-## Audit
-
-- Create Cycle
-- Assign Auditor
-- Submit Audit
-
-## Reports
-
-- Dashboard
-- Utilization
-- Maintenance
-- Export
+Available
+ ├── Reserved
+ ├── Under Maintenance
+ ├── Lost
+ ├── Retired
+ └── Disposed
+```
 
 ---
 
-# Dashboard Widgets
+# 🔄 Business Workflow
 
-- Asset Distribution
-- Maintenance Overview
-- Department Summary
-- Booking Calendar
-- Recent Activities
-- Upcoming Returns
-- Notifications
-- KPI Cards
+```
+Employee Login
+      │
+      ▼
+Asset Registration
+      │
+      ▼
+Asset Allocation
+      │
+      ▼
+Resource Booking
+      │
+      ▼
+Maintenance Request
+      │
+      ▼
+Asset Transfer
+      │
+      ▼
+Audit Cycle
+      │
+      ▼
+Reports & Analytics
+```
 
 ---
 
-# Security
+# 🔒 Security
 
 - JWT Authentication
 - Password Hashing
-- Role Based Access Control
+- Role-Based Authorization
 - Protected APIs
 - Input Validation
 - Secure File Uploads
@@ -863,102 +354,90 @@ assetflow
 
 ---
 
-# Future Enhancements
+# 🚀 Installation
 
-- QR Scanner
-- Barcode Scanner
+Clone the repository
+
+```bash
+git clone https://github.com/yourusername/AssetFlow.git
+```
+
+Go to the project
+
+```bash
+cd AssetFlow
+```
+
+Install frontend
+
+```bash
+cd frontend
+npm install
+```
+
+Install backend
+
+```bash
+cd ../backend
+npm install
+```
+
+Configure environment variables
+
+```env
+DATABASE_URL=
+JWT_SECRET=
+CLOUDINARY_URL=
+```
+
+Run Prisma migrations
+
+```bash
+npx prisma migrate dev
+```
+
+Seed database
+
+```bash
+npx prisma db seed
+```
+
+Run backend
+
+```bash
+npm run dev
+```
+
+Run frontend
+
+```bash
+npm run dev
+```
+
+---
+
+# 📌 Future Enhancements
+
 - AI Chat Assistant
 - Predictive Maintenance
-- IoT Integration
+- QR Scanner
+- Barcode Scanner
 - RFID Tracking
 - Mobile Application
 - Email Notifications
 - SMS Alerts
-- WebSocket Live Updates
 - OCR Invoice Upload
-- AI Asset Recommendation
+- IoT Integration
 
 ---
 
-# 8 Hour Hackathon Development Plan
+# 👨‍💻 Team
 
-## Hour 1
-
-- Setup Project
-- Authentication
-- Database Schema
+Built with ❤️ during the **Odoo Hackathon 2026**.
 
 ---
 
-## Hour 2
+# ⭐ Support
 
-- Organization Setup
-- Roles
-- Employee Directory
+If you found this project useful, consider giving it a ⭐ on GitHub.
 
----
-
-## Hour 3
-
-- Asset Registration
-- Asset Directory
-
----
-
-## Hour 4
-
-- Allocation
-- Transfers
-- Returns
-
----
-
-## Hour 5
-
-- Booking Module
-- Calendar
-
----
-
-## Hour 6
-
-- Maintenance
-- Notifications
-
----
-
-## Hour 7
-
-- Dashboard
-- Reports
-- Charts
-
----
-
-## Hour 8
-
-- UI Polish
-- Testing
-- Deployment
-- Presentation
-
----
-
-# What Makes AssetFlow Different
-
-- Enterprise-grade Workflow
-- Real role hierarchy
-- Conflict prevention
-- Complete asset lifecycle
-- ERP-inspired architecture
-- Audit-ready history
-- Scalable modular design
-- Modern responsive UI
-- Dashboard-first experience
-- Production-ready folder structure
-
----
-
-# Team Vision
-
-AssetFlow is designed to modernize organizational asset management by replacing fragmented spreadsheets and manual processes with a centralized, intelligent, and scalable ERP platform. Our goal is to build a system that improves accountability, transparency, operational efficiency, and decision-making while providing an intuitive experience for every user role.
