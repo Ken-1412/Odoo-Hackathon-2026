@@ -455,5 +455,4 @@ Built with ❤️ for **Odoo Hackathon 2026**
 
 </div>
 
-If you found this project useful, consider giving it a ⭐ on GitHub.
 
